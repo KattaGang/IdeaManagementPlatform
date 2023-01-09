@@ -11,7 +11,6 @@ def dummyView(request, pk=0, pk2=0):
 def home(request):
     business_units = BusinessUnit.objects.all()
     programs = Program.objects.all()
-    print(programs)
     context = {
         'business_units': business_units,
         'programs' : programs,

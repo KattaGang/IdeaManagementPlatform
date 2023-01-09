@@ -5,7 +5,7 @@ from .forms import ProfileForm
 from .models import Profile
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
-from django.contrib import  messages
+from django.contrib import messages
 # Create your views here.
 
 
@@ -13,7 +13,13 @@ def dummyView(request, pk=0, pk2=0):
     return render(request, 'dummy.html')
 
 
+def baseView(request):
+    return redirect('home')
+
+
 def loginUser(request):
+    if request.user.is_authenticated:
+        return redirect('home')
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
@@ -22,8 +28,11 @@ def loginUser(request):
             login(request, user)
             return redirect('home')
         else:
-            messages.add_message(request, messages.ERROR, 'Invalid Username of Password')
-    return render(request, 'account/login.html')
+            messages.error(request, 'Wrong Username or Password')
+    context = {
+        'messages': messages,
+    }
+    return render(request, 'account/login.html', context)
 
 
 def registerUser(request):
@@ -43,17 +52,21 @@ def registerUser(request):
         else:
             context = {
                 'user_form': user_form,
+                'messages': messages,
             }
             return render(request, 'account/register.html', context)
+
 
 @login_required(login_url='login')
 def logoutUser(request):
     logout(request)
     return redirect('login')
 
+
 @login_required(login_url='login')
 def userProfile(request):
     return redirect('profile', request.user.id)
+
 
 def profile(request, pk):
     user = User.objects.get(id=pk)
@@ -70,21 +83,26 @@ def profileList(request):
     }
     return render(request, 'account/profile_list.html', context)
 
+
 @login_required(login_url='login')
 def profileUpdate(request):
     profile = request.user.profile
     profile_form = ProfileForm(instance=profile)
     if request.method == 'POST':
-        profile_form = ProfileForm(request.POST, request.FILES, instance=profile)
+        profile_form = ProfileForm(
+            request.POST, request.FILES, instance=profile)
         if profile_form.is_valid():
             profile = profile_form.save()
             profile.save()
             return redirect('profile', profile.id)
         else:
-            print(profile_form.errors)
+            errors = profile_form.errors.as_data()
+            for field in errors:
+                for error in errors[field]:
+                    messages.error(request, error)
     context = {
-        'profile_form' : profile_form,
-        'error_messages' : profile_form
+        'form': profile_form,
+        'messages': messages,
     }
     return render(request, 'account/profile_form.html', context)
 

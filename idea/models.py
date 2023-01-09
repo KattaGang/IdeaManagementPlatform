@@ -3,6 +3,8 @@ from account.models import Profile
 from django.contrib.auth.models import User
 from program.models import BusinessUnit, Program
 from django.utils import timezone
+from django.core.mail import send_mail
+
 # Create your models here.
 
 
@@ -49,6 +51,32 @@ class Idea(models.Model):
 
     def getStatus(self):
         return self.STATUS_CHOICES[self.status][1]
+
+    def send_apply_email(self):
+        program = self.program
+        to_mail_list = [program.coordinator.email, program.business_unit.jury.email, self.ideator.email]
+        subject = f"Idea applied for project {program.name}"
+        message = self.title + '\n' + self.summary
+        send_mail(
+            subject,
+            message,
+            'wcedummy7798@gmail.com',
+            to_mail_list,
+            fail_silently=False
+        )
+
+    def change_of_status_mail(self):
+        program = self.program
+        to_mail_list = [program.coordinator.email, program.business_unit.jury.email]
+        subject = f"Idea Status Changed to {self.getStatus()} for Idea {self.title}"
+        message = self.title + '\n' + self.summary
+        send_mail(
+            subject,
+            message,
+            'wcedummy7798@gmail.com',
+            to_mail_list,
+            fail_silently=False
+        )
 
     class Meta:
         ordering =['-updated', '-created']

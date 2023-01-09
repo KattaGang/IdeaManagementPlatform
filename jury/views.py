@@ -13,8 +13,10 @@ def juryIdeaList(request):
     if not request.user.profile.is_jury:
         return redirect('access-denied')
     user = request.user
-    business_unit = user.profile.jury_business_unit
-    programs = user.profile.jury_programs.all()
+    business_units = BusinessUnit.objects.filter(jury=user)
+    programs = Program.objects.filter(business_unit=None)
+    for business_unit in business_units:
+        programs = programs | Program.objects.filter(business_unit=business_unit)
     ideas = Idea.objects.filter(business_unit=business_unit)
     context = {
         'user': user,
@@ -65,16 +67,16 @@ def ideaPutOnHold(request, pk):
 
 @login_required(login_url='login')
 def ideaChangeStatus(request, pk):
-    print("Called")
     if not request.user.profile.is_jury:
         return redirect('access-denied')
     user = request.user
     idea = Idea.objects.get(id=pk)
-    if user.profile.is_jury and user.profile.jury_business_unit == idea.business_unit:
+    if idea.business_unit.jury == user:
         if request.method == 'POST':
             form = IdeaStatusForm(request.POST, request.FILES, instance=idea)
             if form.is_valid():
-                form.save()
+                idea = form.save()
+                idea.change_of_status_mail()
                 return redirect('idea', idea.id)
         form = IdeaStatusForm(instance=idea)
         context = {

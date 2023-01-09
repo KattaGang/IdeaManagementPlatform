@@ -36,15 +36,7 @@ def ideaCreate(request, pk):
         idea.ideator = request.user
         if form.is_valid():
             idea.save()
-            subject = f"Idea applied for project {program.name}"
-            message = idea.description
-            send_mail(
-                subject,
-                message,
-                'wcedummy7798@gmail.com',
-                [program.coordinator.email, 'wcedummy7798@gmail.com'],
-                fail_silently=False
-            )
+            idea.send_apply_email()
             return redirect('idea', idea.id)
     context = {
         'form': form,

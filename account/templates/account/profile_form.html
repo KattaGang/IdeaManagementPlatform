@@ -1,20 +1,13 @@
 {% extends 'main.html' %}
 {% block content %}
-
-<form enctype="multipart/form-data" method="POST">
-  {% csrf_token %}
-  {{user_form.as_p}}
-  {{profile_form.as_p}}
-  <input type="submit" value="Create" />
-
-  {% if user_form.error_messages or profile_form.error_messages %}
-  {% for message in user_form.error_messages %}
-  {{message}}
-  {% endfor %}
-  {% for message in profile_form.error_messages %}
-  {{message}}
-  {% endfor %}
-  {% endif %}
-</form>
-
+<section class="personalform">
+  <div class="container">
+    <h2 class="lgheading">Personal Details</h2>
+    <form class="signupform" enctype="multipart/form-data" method="POST">
+      {% csrf_token %}
+      {{form.as_p}}
+      <button type="submit" class="btn btnsign">Submit</button>
+    </form>
+  </div>
+</section>
 {% endblock content %}

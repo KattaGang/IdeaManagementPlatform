@@ -70,7 +70,7 @@ h1,h2,h3{
 
 .signupform label{display: block;font-size: 2rem;}
 .signupform input{display: block;width: 100% ;padding: 1rem;}
-.signupform{max-width: 300px;width: 90%; margin: auto;text-align: left;}
+.signupform{max-width: 300px;width: 90%; margin: auto;text-align: left; padding: 1rem;}
 .formgroup{margin-top: 1rem;}
 .btnsign{background: black;color: azure;padding: 1rem 2rem;display: block;margin: auto;font-size: 1rem;margin-top: 1rem;}
 
