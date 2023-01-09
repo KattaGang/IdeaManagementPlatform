@@ -55,8 +55,8 @@ main {
 }
 
 container {
-    max-width: 350px;
-    max-height: 100px;
+    max-width: 350rem;
+    max-height: 100rem;
     min-width: 40px;
     min-height: 50px;
     display: inline-table;
